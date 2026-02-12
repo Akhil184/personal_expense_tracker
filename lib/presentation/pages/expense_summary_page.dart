@@ -30,131 +30,167 @@ class _SummaryPageState extends State<ExpenseSummaryPage> {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Column(
+        mainAxisAlignment:MainAxisAlignment.center,
         children: [
-          const SizedBox(height: 12),
 
           /// Toggle: Weekly / Monthly / Yearly
-         Padding(padding:EdgeInsets.only(left:15,right:15),
-        child:DropdownButtonFormField<SummaryType>(
-          value: selectedSummary,
-          isDense: true,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          ),
-          onChanged: (value) {
-            setState(() {
-              selectedSummary = value!;
-            });
-          },
-          items: const [
-            DropdownMenuItem(value: SummaryType.weekly, child: Text('Weekly')),
-            DropdownMenuItem(value: SummaryType.monthly, child: Text('Monthly')),
-            DropdownMenuItem(value: SummaryType.yearly, child: Text('Yearly')),
-          ],
-        ),
-
-         ),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            child: DropdownButtonFormField<ExpenseCategory>(
-              value: selectedCategory,
-              decoration: const InputDecoration(
-                labelText: 'Category',
-                border: OutlineInputBorder(),
+            Container(
+              width: MediaQuery.of(context).size.width - 32,
+              height:MediaQuery.of(context).size.height/2,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 76),
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.shade300,
+                    blurRadius: 8,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              onChanged: (value) {
-                setState(() {
-                  selectedCategory = value!;
-                });
-              },
-              items: const [
-                DropdownMenuItem(value: ExpenseCategory.rent, child: Text('Rent')),
-                DropdownMenuItem(value: ExpenseCategory.food, child: Text('Food')),
-                DropdownMenuItem(value: ExpenseCategory.fuel, child: Text('Fuel')),
+            child:Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // --- Summary Type Dropdown ---
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: DropdownButtonFormField<SummaryType>(
+                    value: selectedSummary,
+                    decoration: const InputDecoration(
+                      labelText: 'Summary Type',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedSummary = value!;
+                      });
+                    },
+                    items: const [
+                      DropdownMenuItem(value: SummaryType.weekly, child: Text('Weekly')),
+                      DropdownMenuItem(value: SummaryType.monthly, child: Text('Monthly')),
+                      DropdownMenuItem(value: SummaryType.yearly, child: Text('Yearly')),
+                    ],
+                  ),
+                ),
+
+                // --- Category Dropdown ---
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: DropdownButtonFormField<ExpenseCategory>(
+                    value: selectedCategory,
+                    decoration: const InputDecoration(
+                      labelText: 'Category',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedCategory = value!;
+                      });
+                    },
+                    items: const [
+                      DropdownMenuItem(value: ExpenseCategory.rent, child: Text('Rent')),
+                      DropdownMenuItem(value: ExpenseCategory.food, child: Text('Food')),
+                      DropdownMenuItem(value: ExpenseCategory.fuel, child: Text('Fuel')),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 36),
+
+                // --- Total Expense Card ---
+                BlocBuilder<ExpenseCubit, List<ExpenseModel>>(
+                  builder: (context, expenses) {
+                    if (expenses.isEmpty) {
+                      return const Center(
+                        child: Text('No expenses available for summary.'),
+                      );
+                    }
+
+                    final totalExpense = _getTotalExpense(expenses);
+
+                    return Center(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width - 32,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.shade300,
+                              blurRadius: 8,
+                              spreadRadius: 2,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            /// Left: Labels + Amount
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'Total Expenses',
+                                  style: TextStyle(fontSize: 16, color: Colors.white),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  selectedSummary == SummaryType.weekly
+                                      ? 'This Week'
+                                      : selectedSummary == SummaryType.monthly
+                                      ? 'This Month'
+                                      : 'This Year',
+                                  style: const TextStyle(fontSize: 14, color: Colors.white),
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  '₹ ${totalExpense.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red),
+                                ),
+                              ],
+                            ),
+
+                            /// Right: Icon
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade50,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.account_balance_wallet,
+                                size: 40,
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
           ),
-
-
-
-
-
-
-          const SizedBox(height: 10),
-
-          /// Summary List
-          Expanded(
-            child: BlocBuilder<ExpenseCubit, List<ExpenseModel>>(
-              builder: (context, expenses) {
-                if (expenses.isEmpty) {
-                  return const Center(
-                    child: Text('No expenses available for summary.'),
-                  );
-                }
-
-                final totalExpense = _getTotalExpense(expenses);
-
-                return ListView(
-                  children: [
-                    ListTile(
-                      title: const Text('Total Expenses'),
-                      subtitle: Text(
-                        selectedSummary == SummaryType.weekly
-                            ? 'Total for this week'
-                            : selectedSummary == SummaryType.monthly
-                            ? 'Total for this month'
-                            : 'Total for this year',
-                      ),
-                      trailing: Text(
-                        '₹ ${totalExpense.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+              ]
+      )
     );
   }
 
   /// Reusable Radio Button
-  Widget _buildRadio({
-    required String label,
-    required SummaryType value,
-  }) {
-    final bool isSelected = selectedSummary == value;
 
-    return Row(
-      children: [
-        Radio<SummaryType>(
-          value: value,
-          groupValue: selectedSummary,
-          activeColor: Colors.blue,
-          onChanged: (val) {
-            setState(() {
-              selectedSummary = val!;
-            });
-          },
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: isSelected ? Colors.blue : Colors.black87,
-          ),
-        ),
-      ],
-    );
-  }
 
   DateTime _dateOnly(DateTime d) =>
       DateTime(d.year, d.month, d.day);
