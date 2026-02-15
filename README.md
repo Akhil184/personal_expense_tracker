@@ -16,8 +16,6 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 
-<a href="https://play.google.com/store/apps/details?id=org.co.per.expensetracker">
-  <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png"
-       alt="Play Store"
-       width="40">
-</a>
+## 📲 Download App
+
+[Expense Tracker Pro](https://play.google.com/store/apps/details?id=com.akhil.expensetracker)
