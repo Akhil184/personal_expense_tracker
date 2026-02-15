@@ -21,171 +21,200 @@ class _SummaryPageState extends State<ExpenseSummaryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF4A90E2), Color(0xFF007AFF)],
+            ),
+          ),
+        ),
         title: const Text(
           'Expense Summary',
           style: TextStyle(color: Colors.white, fontSize: 18),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Column(
-        mainAxisAlignment:MainAxisAlignment.center,
-        children: [
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
 
-          /// Toggle: Weekly / Monthly / Yearly
-            Container(
-              width: MediaQuery.of(context).size.width - 32,
-              height:MediaQuery.of(context).size.height/2,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 76),
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.shade300,
-                    blurRadius: 8,
-                    spreadRadius: 2,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-            child:Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // --- Summary Type Dropdown ---
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: DropdownButtonFormField<SummaryType>(
-                    value: selectedSummary,
-                    decoration: const InputDecoration(
-                      labelText: 'Summary Type',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedSummary = value!;
-                      });
-                    },
-                    items: const [
-                      DropdownMenuItem(value: SummaryType.weekly, child: Text('Weekly')),
-                      DropdownMenuItem(value: SummaryType.monthly, child: Text('Monthly')),
-                      DropdownMenuItem(value: SummaryType.yearly, child: Text('Yearly')),
-                    ],
-                  ),
+              /// FILTER CARD
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.shade300,
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 5),
+                    )
+                  ],
                 ),
+                child: Column(
+                  children: [
 
-                // --- Category Dropdown ---
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: DropdownButtonFormField<ExpenseCategory>(
-                    value: selectedCategory,
-                    decoration: const InputDecoration(
-                      labelText: 'Category',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedCategory = value!;
-                      });
-                    },
-                    items: const [
-                      DropdownMenuItem(value: ExpenseCategory.rent, child: Text('Rent')),
-                      DropdownMenuItem(value: ExpenseCategory.food, child: Text('Food')),
-                      DropdownMenuItem(value: ExpenseCategory.fuel, child: Text('Fuel')),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 36),
-
-                // --- Total Expense Card ---
-                BlocBuilder<ExpenseCubit, List<ExpenseModel>>(
-                  builder: (context, expenses) {
-                    if (expenses.isEmpty) {
-                      return const Center(
-                        child: Text('No expenses available for summary.'),
-                      );
-                    }
-
-                    final totalExpense = _getTotalExpense(expenses);
-
-                    return Center(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width - 32,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.shade300,
-                              blurRadius: 8,
-                              spreadRadius: 2,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            /// Left: Labels + Amount
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  'Total Expenses',
-                                  style: TextStyle(fontSize: 16, color: Colors.white),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  selectedSummary == SummaryType.weekly
-                                      ? 'This Week'
-                                      : selectedSummary == SummaryType.monthly
-                                      ? 'This Month'
-                                      : 'This Year',
-                                  style: const TextStyle(fontSize: 14, color: Colors.white),
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  '₹ ${totalExpense.toStringAsFixed(2)}',
-                                  style: const TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.red),
-                                ),
-                              ],
-                            ),
-
-                            /// Right: Icon
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.blue.shade50,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.account_balance_wallet,
-                                size: 40,
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ],
+                    /// Summary Type Dropdown
+                    DropdownButtonFormField<SummaryType>(
+                      value: selectedSummary,
+                      decoration: InputDecoration(
+                        labelText: 'Summary Type',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                    );
-                  },
+                      onChanged: (value) {
+                        setState(() {
+                          selectedSummary = value!;
+                        });
+                      },
+                      items: const [
+                        DropdownMenuItem(
+                            value: SummaryType.weekly,
+                            child: Text('Weekly')),
+                        DropdownMenuItem(
+                            value: SummaryType.monthly,
+                            child: Text('Monthly')),
+                        DropdownMenuItem(
+                            value: SummaryType.yearly,
+                            child: Text('Yearly')),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    /// Category Dropdown
+                    DropdownButtonFormField<ExpenseCategory>(
+                      value: selectedCategory,
+                      decoration: InputDecoration(
+                        labelText: 'Category',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedCategory = value!;
+                        });
+                      },
+                      items: const [
+                        DropdownMenuItem(
+                            value: ExpenseCategory.rent,
+                            child: Text('Rent')),
+                        DropdownMenuItem(
+                            value: ExpenseCategory.food,
+                            child: Text('Food')),
+                        DropdownMenuItem(
+                            value: ExpenseCategory.fuel,
+                            child: Text('Fuel')),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+
+              const SizedBox(height: 30),
+
+              /// SUMMARY CARD
+              BlocBuilder<ExpenseCubit, List<ExpenseModel>>(
+                builder: (context, expenses) {
+                  if (expenses.isEmpty) {
+                    return const Text(
+                      'No expenses available.',
+                      style: TextStyle(fontSize: 16),
+                    );
+                  }
+
+                  final totalExpense = _getTotalExpense(expenses);
+
+                  return Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.purple.shade200,
+                          blurRadius: 15,
+                          offset: const Offset(0, 6),
+                        )
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                      children: [
+
+                        /// LEFT SIDE
+                        Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Total Expenses',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              selectedSummary ==
+                                  SummaryType.weekly
+                                  ? 'This Week'
+                                  : selectedSummary ==
+                                  SummaryType.monthly
+                                  ? 'This Month'
+                                  : 'This Year',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              '₹ ${totalExpense.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        /// RIGHT ICON
+                        Container(
+                          padding: const EdgeInsets.all(18),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.account_balance_wallet,
+                            size: 42,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-              ]
-      )
+        ),
+      ),
     );
   }
 

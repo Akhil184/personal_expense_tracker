@@ -14,3 +14,10 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+<a href="https://play.google.com/store/apps/details?id=your.app.id">
+  <img src="https://cdn-icons-png.flaticon.com/512/888/888857.png"
+       alt="Play Store"
+       width="40">
+</a>
