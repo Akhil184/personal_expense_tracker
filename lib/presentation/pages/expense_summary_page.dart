@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:fl_chart/fl_chart.dart';
 import '../../data/models/expense_category.dart';
 import '../../data/models/expense_model.dart';
 import '../cubit/expense_cubit.dart';
 
-/// Summary type enum
 enum SummaryType { weekly, monthly, yearly }
-
 
 class ExpenseSummaryPage extends StatefulWidget {
   @override
@@ -16,216 +14,323 @@ class ExpenseSummaryPage extends StatefulWidget {
 
 class _SummaryPageState extends State<ExpenseSummaryPage> {
   SummaryType selectedSummary = SummaryType.weekly;
-  ExpenseCategory selectedCategory = ExpenseCategory.rent;
+  ExpenseCategory selectedCategory = ExpenseCategory.miscellaneous;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: const Color(0xFFF4F6FA),
       appBar: AppBar(
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF4A90E2), Color(0xFF007AFF)],
-            ),
-          ),
-        ),
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
         title: const Text(
-          'Expense Summary',
-          style: TextStyle(color: Colors.white, fontSize: 18),
+          "Expense Summary",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
 
-              /// FILTER CARD
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.shade300,
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                      offset: const Offset(0, 5),
-                    )
-                  ],
-                ),
-                child: Column(
-                  children: [
+            const Text(
+              "Overview",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
 
-                    /// Summary Type Dropdown
-                    DropdownButtonFormField<SummaryType>(
-                      value: selectedSummary,
-                      decoration: InputDecoration(
-                        labelText: 'Summary Type',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedSummary = value!;
-                        });
-                      },
-                      items: const [
-                        DropdownMenuItem(
-                            value: SummaryType.weekly,
-                            child: Text('Weekly')),
-                        DropdownMenuItem(
-                            value: SummaryType.monthly,
-                            child: Text('Monthly')),
-                        DropdownMenuItem(
-                            value: SummaryType.yearly,
-                            child: Text('Yearly')),
-                      ],
-                    ),
+            const SizedBox(height: 20),
 
-                    const SizedBox(height: 20),
+            _buildSummarySelector(),
 
-                    /// Category Dropdown
-                    DropdownButtonFormField<ExpenseCategory>(
-                      value: selectedCategory,
-                      decoration: InputDecoration(
-                        labelText: 'Category',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedCategory = value!;
-                        });
-                      },
-                      items: const [
-                        DropdownMenuItem(
-                            value: ExpenseCategory.rent,
-                            child: Text('Rent')),
-                        DropdownMenuItem(
-                            value: ExpenseCategory.food,
-                            child: Text('Food')),
-                        DropdownMenuItem(
-                            value: ExpenseCategory.fuel,
-                            child: Text('Fuel')),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+            const SizedBox(height: 20),
 
-              const SizedBox(height: 30),
+            _buildCategorySelector(),
 
-              /// SUMMARY CARD
-              BlocBuilder<ExpenseCubit, List<ExpenseModel>>(
-                builder: (context, expenses) {
-                  if (expenses.isEmpty) {
-                    return const Text(
-                      'No expenses available.',
-                      style: TextStyle(fontSize: 16),
-                    );
-                  }
+            const SizedBox(height: 30),
 
-                  final totalExpense = _getTotalExpense(expenses);
-
-                  return Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
-                      ),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.purple.shade200,
-                          blurRadius: 15,
-                          offset: const Offset(0, 6),
-                        )
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                      children: [
-
-                        /// LEFT SIDE
-                        Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Total Expenses',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              selectedSummary ==
-                                  SummaryType.weekly
-                                  ? 'This Week'
-                                  : selectedSummary ==
-                                  SummaryType.monthly
-                                  ? 'This Month'
-                                  : 'This Year',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              '₹ ${totalExpense.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        /// RIGHT ICON
-                        Container(
-                          padding: const EdgeInsets.all(18),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.account_balance_wallet,
-                            size: 42,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
+            BlocBuilder<ExpenseCubit, List<ExpenseModel>>(
+              builder: (context, expenses) {
+                if (expenses.isEmpty) {
+                  return const Center(
+                    child: Text("No expenses available."),
                   );
-                },
-              ),
-            ],
-          ),
+                }
+
+                final totalExpense = _getTotalExpense(expenses);
+
+                return Column(
+                  children: [
+                    _buildSummaryCard(totalExpense),
+                    const SizedBox(height: 30),
+                    _buildPieChart((expenses),
+                    )// ✅ pass list here
+                  ],
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
   }
 
-  /// Reusable Radio Button
+  // 🔵 Segmented Summary Selector
+  Widget _buildSummarySelector() {
+    return Container(
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Row(
+        children: SummaryType.values.map((type) {
+          final isSelected = selectedSummary == type;
 
+          return Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedSummary = type;
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.blue : Colors.transparent,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: Center(
+                  child: Text(
+                    type.name.toUpperCase(),
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.black87,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
 
-  DateTime _dateOnly(DateTime d) =>
-      DateTime(d.year, d.month, d.day);
+  // 🟢 Category Chips
+  Widget _buildCategorySelector() {
+    return SizedBox(
+      height: 45,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: ExpenseCategory.values.map((category) {
+          final isSelected = selectedCategory == category;
 
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ChoiceChip(
+              label: Text(
+                category.name,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.black87,
+                ),
+              ),
+              selected: isSelected,
+              selectedColor: Colors.blue,
+              backgroundColor: Colors.grey.shade200,
+              onSelected: (_) {
+                setState(() {
+                  selectedCategory = category;
+                });
+              },
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
 
-  /// Calculate total expense
+  Widget _buildPieChart(List<ExpenseModel> expenses) {
+    final Map<ExpenseCategory, double> categoryTotals = {};
+
+    final now = DateTime.now();
+    final startOfWeek =
+    _dateOnly(now.subtract(Duration(days: now.weekday - 1)));
+    final startOfMonth = DateTime(now.year, now.month, 1);
+    final startOfYear = DateTime(now.year, 1, 1);
+
+    for (final expense in expenses) {
+      final expenseDate = _dateOnly(expense.date);
+
+      bool include = false;
+      switch (selectedSummary) {
+        case SummaryType.weekly:
+          include = !expenseDate.isBefore(startOfWeek);
+          break;
+        case SummaryType.monthly:
+          include = !expenseDate.isBefore(startOfMonth);
+          break;
+        case SummaryType.yearly:
+          include = !expenseDate.isBefore(startOfYear);
+          break;
+      }
+
+      if (include) {
+        categoryTotals.update(
+          expense.category,
+              (value) => value + expense.amount,
+          ifAbsent: () => expense.amount,
+        );
+      }
+    }
+
+    if (categoryTotals.isEmpty) {
+      return const Center(child: Text("No data available"));
+    }
+
+    final total = categoryTotals.values.fold(0.0, (a, b) => a + b);
+
+    final colors = [
+      Colors.blue,
+      Colors.orange,
+      Colors.green,
+      Colors.red,
+      Colors.purple,
+      Colors.teal,
+    ];
+
+    int index = 0;
+
+    return Column(
+      children: [
+        SizedBox(
+          height: 300,
+          child: PieChart(
+            PieChartData(
+              sectionsSpace: 3,
+              centerSpaceRadius: 50,
+              sections: categoryTotals.entries.map((entry) {
+                final color = colors[index % colors.length];
+                index++;
+
+                final percentage =
+                ((entry.value / total) * 100).toStringAsFixed(1);
+
+                return PieChartSectionData(
+                  color: color,
+                  value: entry.value,
+                  radius: 85,
+                  borderSide: const BorderSide(
+                    color: Colors.white,
+                    width: 2,
+                  ),
+                  title: ((entry.value / total) * 100) > 8   // 👈 show only if >8%
+                      ? "${((entry.value / total) * 100).toStringAsFixed(0)}%"
+                      : "",
+                  titlePositionPercentageOffset: 0.6,
+                  titleStyle: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 20),
+
+        // 🔥 Legend (Very Important for Clarity)
+        Wrap(
+          spacing: 12,
+          runSpacing: 8,
+          children: categoryTotals.entries.map((entry) {
+            final color =
+            colors[categoryTotals.keys.toList().indexOf(entry.key) %
+                colors.length];
+
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 14,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  "${entry.key.name} (₹${entry.value.toStringAsFixed(0)})",
+                  style: const TextStyle(fontSize: 13),
+                ),
+              ],
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  // 🟣 Premium Summary Card
+  Widget _buildSummaryCard(double totalExpense) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF5F6FFF), Color(0xFF8F94FB)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Total Spending",
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            "₹ ${totalExpense.toStringAsFixed(2)}",
+            style: const TextStyle(
+              fontSize: 34,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            selectedSummary.name.toUpperCase(),
+            style: const TextStyle(
+              color: Colors.white70,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 🔎 Date Filter Logic
+  DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
+
   double _getTotalExpense(List<ExpenseModel> expenses) {
     final now = DateTime.now();
 
@@ -244,54 +349,18 @@ class _SummaryPageState extends State<ExpenseSummaryPage> {
         case SummaryType.weekly:
           include = !expenseDate.isBefore(startOfWeek);
           break;
-
         case SummaryType.monthly:
           include = !expenseDate.isBefore(startOfMonth);
           break;
-
         case SummaryType.yearly:
           include = !expenseDate.isBefore(startOfYear);
           break;
       }
 
-      // ✅ ADD CATEGORY FILTER HERE
       final matchesCategory =
-          selectedCategory == null || expense.category == selectedCategory;
+          expense.category == selectedCategory;
 
       if (include && matchesCategory) {
-        total += expense.amount;
-      }
-    }
-
-    return total;
-  }
-
-  double getCategorySummary(List<ExpenseModel> expenses) {
-    final now = DateTime.now();
-    double total = 0;
-
-    DateTime startDate;
-
-    switch (selectedSummary) {
-      case SummaryType.weekly:
-        startDate = now.subtract(Duration(days: now.weekday - 1));
-        break;
-
-      case SummaryType.monthly:
-        startDate = DateTime(now.year, now.month, 1);
-        break;
-
-      case SummaryType.yearly:
-        startDate = DateTime(now.year, 1, 1);
-        break;
-    }
-
-    for (final expense in expenses) {
-      final matchesDate = expense.date.isAfter(startDate);
-      final matchesCategory =
-          selectedCategory == null || expense.category == selectedCategory;
-
-      if (matchesDate && matchesCategory) {
         total += expense.amount;
       }
     }

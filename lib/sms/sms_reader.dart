@@ -62,23 +62,69 @@ double _extractAmount(String message) {
 }
 
 ExpenseCategory _detectCategoryFromSms(String body) {
+
+  // 🍔 Food Delivery
   if (body.contains('swiggy') ||
       body.contains('zomato') ||
-      body.contains('blinkit') ||
-      body.contains('ubereats')) {
+      body.contains('ubereats') ||
+      body.contains('blinkit')) {
     return ExpenseCategory.food;
   }
 
+  // ⛽ Fuel
   if (body.contains('petrol') ||
       body.contains('fuel') ||
       body.contains('hpcl') ||
-      body.contains('ioc')) {
+      body.contains('ioc') ||
+      body.contains('bharat petroleum')) {
     return ExpenseCategory.fuel;
   }
 
+  // 🏠 Rent
   if (body.contains('rent')) {
     return ExpenseCategory.rent;
   }
 
-  return ExpenseCategory.bank;
+  // 🛒 Shopping
+  if (body.contains('amazon') ||
+      body.contains('flipkart') ||
+      body.contains('myntra') ||
+      body.contains('meesho')) {
+    return ExpenseCategory.shopping;
+  }
+
+  // 🚕 Transport
+  if (body.contains('ola') ||
+      body.contains('uber') ||
+      body.contains('rapido')) {
+    return ExpenseCategory.transport;
+  }
+
+  // 🎬 Subscriptions
+  if (body.contains('netflix') ||
+      body.contains('spotify') ||
+      body.contains('prime') ||
+      body.contains('hotstar')) {
+    return ExpenseCategory.subscriptions;
+  }
+
+  // 🏦 EMI / Loan
+  if (body.contains('emi') ||
+      body.contains('loan')) {
+    return ExpenseCategory.loanRepayment;
+  }
+
+  // 💳 Credit Card
+  if (body.contains('credit card')) {
+    return ExpenseCategory.creditCardBill;
+  }
+
+  // 🏥 Medical
+  if (body.contains('hospital') ||
+      body.contains('pharmacy') ||
+      body.contains('apollo')) {
+    return ExpenseCategory.medical;
+  }
+
+  return ExpenseCategory.miscellaneous;
 }
